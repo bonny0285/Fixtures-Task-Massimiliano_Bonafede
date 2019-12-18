@@ -1,17 +1,19 @@
 import UIKit
 import Alamofire
+import SwiftyJSON
 
 class FixturesViewController: UITableViewController {
 
-    private var matches: [Match]?
 
+    var matches : [MatchModel]?
+    var fetch = FetchJSON()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        fetch.delegate = self
+        fetch.fetcJSON()
 
-        Match.fetchMatches {
-            self.matches = $0
-            self.tableView.reloadData()
-        }
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -26,16 +28,38 @@ class FixturesViewController: UITableViewController {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "fixture", for: indexPath) as? FixtureTableViewCell,
             let match = matches?[indexPath.row]
             else { fatalError() }
-
+        
+        if indexPath.row == 0 {
+            cell.backgroundColor = #colorLiteral(red: 0.9843137255, green: 0.6196078431, blue: 0.1882352941, alpha: 1)
+        }
         cell.homeTeamNameLabel.text = match.homeTeamName
         cell.awayTeamNameLabel.text = match.awayTeamName
+        cell.timeLbl.text = match.matchTime
         
         return cell
     }
+    
+    
+    
 }
 
-class FixtureTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var homeTeamNameLabel: UILabel!
-    @IBOutlet weak var awayTeamNameLabel: UILabel!
+extension FixturesViewController: MatchDelegate{
+    
+    
+    
+    func passData(forData matchs: [MatchModel]) {
+        
+        
+        
+      DispatchQueue.main.async {
+        
+        print(matchs.count)
+        self.matches = matchs
+        self.tableView.reloadData()
+       }
+        
+    }
+    
+    
 }
