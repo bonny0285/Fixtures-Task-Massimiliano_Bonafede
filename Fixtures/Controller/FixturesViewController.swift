@@ -5,40 +5,57 @@ import SwiftyJSON
 class FixturesViewController: UITableViewController {
 
 
-    var matches : [MatchModel]?
-    var fetch = FetchJSON()
+    private var matches : [MatchModel]?
+    private var fetch = FetchJSON()
+    private var timeTable : String?
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         fetch.delegate = self
         fetch.fetcJSON()
+        
 
     }
+    
+    
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        
+        return matches?.count ?? 0
+        
     }
+    
+    
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return matches?.count ?? 0
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "fixture", for: indexPath) as? FixtureTableViewCell,
             let match = matches?[indexPath.row]
             else { fatalError() }
         
-        if indexPath.row == 0 {
-            cell.backgroundColor = #colorLiteral(red: 0.9843137255, green: 0.6196078431, blue: 0.1882352941, alpha: 1)
-        }
+
+        let isoDate = match.matchTime
+        let dateFormatter = ISO8601DateFormatter()
+        let date = dateFormatter.date(from:isoDate)!
+        
+        
+    
+       
         cell.homeTeamNameLabel.text = match.homeTeamName
         cell.awayTeamNameLabel.text = match.awayTeamName
-        cell.timeLbl.text = match.matchTime
+        cell.timeLbl.text = "\(date.toString(dateFormat: "HH:mm"))"
+        timeTable = "\(date.toString(dateFormat: "MM:dd:yyyy"))"
         
         return cell
     }
-    
     
     
 }
@@ -50,12 +67,10 @@ extension FixturesViewController: MatchDelegate{
     
     func passData(forData matchs: [MatchModel]) {
         
-        
-        
+    
       DispatchQueue.main.async {
-        
-        print(matchs.count)
         self.matches = matchs
+        self.matches?.sort(by: { $0.matchTime < $1.matchTime })
         self.tableView.reloadData()
        }
         
@@ -63,3 +78,7 @@ extension FixturesViewController: MatchDelegate{
     
     
 }
+
+
+
+

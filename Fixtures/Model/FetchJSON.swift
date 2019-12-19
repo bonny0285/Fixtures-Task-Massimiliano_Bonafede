@@ -49,7 +49,7 @@ class FetchJSON {
                 
                 
                 for i in 0...counter - 1 {
-                    var mat = MatchModel(home: "\(matchJSON[i]["homeTeam"]["name"])", away: "\(matchJSON[i]["awayTeam"]["name"])", time: "\(matchJSON[i]["utcDate"])")
+                    let mat = MatchModel(home: "\(matchJSON[i]["homeTeam"]["name"])", away: "\(matchJSON[i]["awayTeam"]["name"])", time: "\(matchJSON[i]["utcDate"])")
                                         
                     self.matchModel.append(mat)
                 }
